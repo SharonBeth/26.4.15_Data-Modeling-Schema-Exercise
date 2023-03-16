@@ -1,0 +1,281 @@
+26.5.14: Data Modeling
+
+***************Part 2************************************
+
+Schema One: Outer Space
+1. Seeded database from starter code.
+2. Pulled the original table in the outer_space DB.
+
+id |        name        | orbital_period_in_years |  orbits_around   |  galaxy   |                                                      moons
+----+--------------------+-------------------------+------------------+-----------+------------------------------------------------------------------------------------------------------------------
+  1 | Earth              |                       1 | The Sun          | Milky Way | {"The Moon"}
+  2 | Mars               |                    1.88 | The Sun          | Milky Way | {Phobos,Deimos}
+  3 | Venus              |                    0.62 | The Sun          | Milky Way | {}
+  4 | Neptune            |                   164.8 | The Sun          | Milky Way | {Naiad,Thalassa,Despina,Galatea,Larissa,"S/2004 N 1",Proteus,Triton,Nereid,Halimede,Sao,Laomedeia,Psamathe,Neso}
+  5 | Proxima Centauri b |                    0.03 | Proxima Centauri | Milky Way | {}
+  6 | Gliese 876 b       |                    0.23 | Gliese 876       | Milky Way | {}
+
+
+
+3. Set up file in outer_space.sql, for a database set up vs. what was provided was all in one table. After writing the code as I thought it was supposed to be, I ran the code in Ubuntu. The following is the code ran from Ubuntu, error messages, and what I did to resolve each error as I went along.
+	A1. Ubuntu: Ran database Setup
+		sharo@DESKTOP-9R9UPU2:~/usf/SQL_Unit-26/Unit 26.4_SQL-DDL-demo Code/26.4.15_SQL-DDL-design_Exercise/sql-ddl-design_Starter Code$ psql < outer_space.sql
+		DROP DATABASE
+		CREATE DATABASE
+		You are now connected to database "outer_space" as user "sharo".
+		CREATE TABLE
+		CREATE TABLE
+		ERROR:  foreign key constraint "stationary_object_galaxy_id_fkey" cannot be implemented
+		DETAIL:  Key columns "galaxy_id" and "id" are of incompatible types: double precision and integer.
+		ERROR:  syntax error at or near ")"
+		LINE 7: );
+		        ^
+		ERROR:  syntax error at or near ")"
+		LINE 6: );
+		        ^
+		CREATE TABLE
+		INSERT 0 17
+		INSERT 0 1
+		ERROR:  relation "stationary_object" does not exist
+		LINE 1: INSERT INTO stationary_object
+		                    ^
+		ERROR:  relation "planets" does not exist
+		LINE 1: INSERT INTO planets
+		                    ^
+		ERROR:  relation "planet_moons" does not exist
+		LINE 1: INSERT INTO planet_moons
+		                    ^
+		INSERT 0 6
+	
+	A2. Evaluation & Correction: 
+		The two data types did not match up in stationary_object and galaxy tables. Changed the stationary_object to INTEGER to match the primary key value. 		Then, error went away after running the code again (see next test).
+	
+
+	B1. UBUNTU:Ran database Setup	
+		sharo@DESKTOP-9R9UPU2:~/usf/SQL_Unit-26/Unit 26.4_SQL-DDL-demo Code/26.4.15_SQL-DDL-design_Exercise/sql-ddl-design_Starter Code$ psql < outer_space.sql
+		DROP DATABASE
+		CREATE DATABASE
+		You are now connected to database "outer_space" as user "sharo".
+		CREATE TABLE
+		CREATE TABLE
+		CREATE TABLE
+		ERROR:  syntax error at or near ")"
+		LINE 7: );
+		        ^
+		ERROR:  syntax error at or near ")"
+		LINE 6: );
+		        ^
+		CREATE TABLE
+		INSERT 0 17
+		INSERT 0 1
+		ERROR:  INSERT has more target columns than expressions
+		LINE 2:   (stationary_object_name, galaxy_id)
+		                                   ^
+		ERROR:  relation "planets" does not exist
+		LINE 1: INSERT INTO planets
+		                    ^
+		ERROR:  relation "planet_moons" does not exist
+		LINE 1: INSERT INTO planet_moons
+		                    ^
+		INSERT 0 6
+
+	B2. Evaluation & Correction: 
+		Errors were new to me. I could not find parenthesis that were not paired up or incorrect. However, I went back through and looked at all the commas. There were commas at the last line of a table, before the parenthesis. I 		found 2 after inspecting the entire file. I reran the file and and these errors went away.
+	
+	C1. Ubuntu: Ran database Setup
+		sharo@DESKTOP-9R9UPU2:~/usf/SQL_Unit-26/Unit 26.4_SQL-DDL-demo Code/26.4.15_SQL-DDL-design_Exercise/sql-ddl-design_Starter Code$ psql < outer_space.sql
+		DROP DATABASE
+		CREATE DATABASE
+		You are now connected to database "outer_space" as user "sharo".
+		CREATE TABLE
+		CREATE TABLE
+		CREATE TABLE
+		CREATE TABLE
+		ERROR:  relation "planet" does not exist
+		CREATE TABLE
+		INSERT 0 17
+		INSERT 0 1
+		ERROR:  INSERT has more target columns than expressions
+		LINE 2:   (stationary_object_name, galaxy_id)
+		                                   ^
+		INSERT 0 6
+		ERROR:  relation "planet_moons" does not exist
+		LINE 1: INSERT INTO planet_moons
+		                    ^
+		INSERT 0 6
+	C2. Evaluation & Correction:
+		The first error above says that "relation planet does not exist". After inspection of the file 'outer_space.sql' it was found on table #5 the REFERENCE to another table was mis-spelled. It said 'planet' and should have said 'planets'. I added it and ran the code again. Error went away, this issue was resolved. See D1 Ubuntu
+	
+	D1. Ubuntu: Ran database Setup
+		sharo@DESKTOP-9R9UPU2:~/usf/SQL_Unit-26/Unit 26.4_SQL-DDL-demo Code/26.4.15_SQL-DDL-design_Exercise/sql-ddl-design_Starter Code$ psql < outer_space.sql
+		DROP DATABASE
+		CREATE DATABASE
+		You are now connected to database "outer_space" as user "sharo".
+		CREATE TABLE
+		CREATE TABLE
+		CREATE TABLE
+		CREATE TABLE
+		ERROR:  foreign key constraint "planet_moons_planet_id_fkey" cannot be implemented
+		DETAIL:  Key columns "planet_id" and "id" are of incompatible types: double precision and integer.
+		CREATE TABLE
+		INSERT 0 17
+		INSERT 0 1
+		ERROR:  INSERT has more target columns than expressions
+		LINE 2:   (stationary_object_name, galaxy_id)
+		                                   ^
+		INSERT 0 6
+		ERROR:  relation "planet_moons" does not exist
+		LINE 1: INSERT INTO planet_moons
+		                    ^
+		INSERT 0 6
+	D2. Evaluation & Correction:
+		The error from C1 was resolved. The next error is incompatible types on planet_moon table to id of planets. Changed the planet_moons table from FLOAT to INTEGER. Ran the code, and this error went away.
+
+	E1. Ubuntu: Ran database Setup
+		sharo@DESKTOP-9R9UPU2:~/usf/SQL_Unit-26/Unit 26.4_SQL-DDL-demo Code/26.4.15_SQL-DDL-design_Exercise/sql-ddl-design_Starter Code$ psql < outer_space.sql
+		DROP DATABASE
+		CREATE DATABASE
+		You are now connected to database "outer_space" as user "sharo".
+		CREATE TABLE
+		CREATE TABLE
+		CREATE TABLE
+		CREATE TABLE
+		ERROR:  foreign key constraint "planet_moons_moon_id_fkey" cannot be implemented
+		DETAIL:  Key columns "moon_id" and "id" are of incompatible types: double precision and integer.
+		CREATE TABLE
+		INSERT 0 17
+		INSERT 0 1
+		ERROR:  INSERT has more target columns than expressions
+		LINE 2:   (stationary_object_name, galaxy_id)
+		                                   ^	
+		INSERT 0 6
+		ERROR:  relation "planet_moons" does not exist
+		LINE 1: INSERT INTO planet_moons
+		                    ^
+		INSERT 0 6
+
+	E2. Evaluation & Correction:
+		Error showed that the data types were not compatible with each other. This was changed and the program was ran again.
+
+	F1. Ubuntu: Ran database Setup
+		sharo@DESKTOP-9R9UPU2:~/usf/SQL_Unit-26/Unit 26.4_SQL-DDL-demo Code/26.4.15_SQL-DDL-design_Exercise/sql-ddl-design_Starter Code$ psql < outer_space.sql
+		DROP DATABASE
+		CREATE DATABASE
+		You are now connected to database "outer_space" as user "sharo".
+		CREATE TABLE
+		CREATE TABLE
+		CREATE TABLE
+		CREATE TABLE
+		CREATE TABLE	
+		CREATE TABLE
+		INSERT 0 17
+		INSERT 0 1
+		ERROR:  INSERT has more target columns than expressions
+		LINE 2:   (stationary_object_name, galaxy_id)
+		                                   ^
+		INSERT 0 6
+		INSERT 0 17
+		INSERT 0 6
+	F2. Evaluation & Correction:
+		On stationary_object table there were two enter 'INSERT INTO''s, but the value lines only had 1 each. This was resolved and the program was ran again.
+
+	G1. Ubuntu: Ran database Setup
+		sharo@DESKTOP-9R9UPU2:~/usf/SQL_Unit-26/Unit 26.4_SQL-DDL-demo Code/26.4.15_SQL-DDL-design_Exercise/sql-ddl-design_Starter Code$ psql < outer_space.sql
+		DROP DATABASE
+		CREATE DATABASE
+		You are now connected to database "outer_space" as user "sharo".
+		CREATE TABLE
+		CREATE TABLE
+		CREATE TABLE
+		CREATE TABLE
+		CREATE TABLE
+		CREATE TABLE
+		INSERT 0 17
+		INSERT 0 1
+		INSERT 0 3
+		INSERT 0 6
+		INSERT 0 17
+		INSERT 0 6
+	
+
+No error came up. Now I will look at the tables  themselves
+
+outer_space=# SELECT * FROM moons;
+ id | moon_name
+----+------------
+  1 | The Moon
+  2 | Phobos
+  3 | Deimos
+  4 | Naiad
+  5 | Thalassa
+  6 | Despina
+  7 | Galatea
+  8 | Larissa
+  9 | S/2004 N 1
+ 10 | Proteus
+ 11 | Triton
+ 12 | Nereid
+ 13 | Halimede
+ 14 | Sao
+ 15 | Laomedeia
+ 16 | Psamathe
+ 17 | Neso
+(17 rows)
+
+outer_space=# SELECT * FROM galaxy;
+ id | galaxy_name
+----+-------------
+  1 | Milky Way
+(1 row)
+
+outer_space=# SELECT * FROM stationary_object;
+ id | stationary_object_name | galaxy_id
+----+------------------------+-----------
+  1 | The Sun                |         1
+  2 | Proxima Centauri       |         1
+  3 | Gliese 876             |         1
+(3 rows)
+
+outer_space=# SELECT * FROM planets;
+ id |        name        | orbital_period_in_years | galaxy_id
+----+--------------------+-------------------------+-----------
+  1 | Earth              |                       1 |         1
+  2 | Mars               |                    1.88 |         1
+  3 | Venus              |                    0.62 |         1
+  4 | Neptune            |                   164.8 |         1
+  5 | Proxima Centauri b |                    0.03 |         1
+  6 | Gliese 876 b       |                    0.23 |         1
+(6 rows)
+
+outer_space=# SELECT * FROM planet_moons;
+ id | planet_id | moon_id
+----+-----------+---------
+  1 |         1 |       1
+  2 |         2 |       2
+  3 |         2 |       3
+  4 |         4 |       4
+  5 |         4 |       5
+  6 |         4 |       6
+  7 |         5 |       7
+  8 |         5 |       8
+  9 |         5 |       9
+ 10 |         5 |      10
+ 11 |         5 |      11
+ 12 |         5 |      12
+ 13 |         5 |      13
+ 14 |         5 |      14
+ 15 |         5 |      15
+ 16 |         5 |      16
+ 17 |         5 |      17
+(17 rows)
+
+outer_space=# SELECT * FROM orbits_around;
+ id | planet_id | stationary_object_id
+----+-----------+----------------------
+  1 | 1         |                    1
+  2 | 2         |                    1
+  3 | 3         |                    1
+  4 | 4         |                    1
+  5 | 5         |                    2
+  6 | 6         |                    3
+(6 rows)
